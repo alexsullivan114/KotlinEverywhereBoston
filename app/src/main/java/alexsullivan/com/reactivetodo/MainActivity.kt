@@ -3,11 +3,13 @@ package alexsullivan.com.reactivetodo
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.list
 
 class MainActivity : AppCompatActivity() {
 
   private val adapter = TodoAdapter()
+  private val disposables = CompositeDisposable()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -15,12 +17,15 @@ class MainActivity : AppCompatActivity() {
     list.layoutManager = LinearLayoutManager(this)
     list.adapter = adapter
 
-    adapter.items = listOf(
-      Todo("First todo", false),
-      Todo("Second todo", false),
-      Todo("Third todo", true),
-      Todo("Fourth todo", false),
-      Todo("Fifth todo", true)
-    )
+    val viewModel = buildViewModel { TodoViewModel() }
+
+    viewModel.itemsObserable
+      .subscribe { adapter.items = it }
+      .addTo(disposables)
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    disposables.clear()
   }
 }
