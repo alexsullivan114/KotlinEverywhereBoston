@@ -2,21 +2,17 @@ package alexsullivan.com.reactivetodo
 
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 
-class TodoViewModel : ViewModel() {
+class TodoViewModel(private val service: TodoNetworkService) : ViewModel() {
   private val itemsSubject = BehaviorSubject.create<List<Todo>>()
-  val itemsObserable: Observable<List<Todo>> = itemsSubject.hide()
+  val itemsObservable: Observable<List<Todo>> = itemsSubject.hide()
 
   init {
-    itemsSubject.onNext(
-      listOf(
-        Todo("First todo", false),
-        Todo("Second todo", false),
-        Todo("Third todo", true),
-        Todo("Fourth todo", false),
-        Todo("Fifth todo", true)
-      )
-    )
+    service
+      .fetchTodos()
+      .subscribeOn(Schedulers.io())
+      .subscribe { todos -> itemsSubject.onNext(todos) }
   }
 }

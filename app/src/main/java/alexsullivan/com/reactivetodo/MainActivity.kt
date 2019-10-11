@@ -17,9 +17,9 @@ class MainActivity : AppCompatActivity() {
     list.layoutManager = LinearLayoutManager(this)
     list.adapter = adapter
 
-    val viewModel = buildViewModel { TodoViewModel() }
+    val viewModel = buildViewModel { TodoViewModel(TodoNetworkServiceImpl()) }
 
-    viewModel.itemsObserable
+    viewModel.itemsObservable
       .subscribe { adapter.items = it }
       .addTo(disposables)
   }
