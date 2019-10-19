@@ -14,9 +14,10 @@ class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) :
   init {
     service
       .fetchTodos()
-      .flatMap { todos -> db.todoDao().insertTasks(todos).map { todos } }
+      .flatMap { todos -> db.todoDao().insertTasks(todos) }
+      .flatMapObservable { db.todoDao().todoObservable().toObservable() }
       .subscribeOn(Schedulers.io())
-      .subscribe(itemsSubject::onNext)
+      .subscribe { todos -> itemsSubject.onNext(todos) }
       .addTo(disposables)
   }
 

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -16,5 +16,5 @@ interface TodoDao {
     fun insertTasks(todos: List<Todo>): Single<List<Long>>
 
     @Query("SELECT * FROM Todo")
-    fun todoObservable(): Observable<List<Todo>>
+    fun todoObservable(): Flowable<List<Todo>>
 }
