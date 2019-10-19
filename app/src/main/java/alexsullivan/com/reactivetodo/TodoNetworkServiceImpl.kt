@@ -1,17 +1,16 @@
 package alexsullivan.com.reactivetodo
 
-import io.reactivex.rxjava3.core.Single
-import java.util.UUID
+import io.reactivex.Single
 
 class TodoNetworkServiceImpl : TodoNetworkService {
   override fun fetchTodos(): Single<List<Todo>> {
     return Single.just(
       listOf(
-        Todo(UUID.randomUUID().toString(), "First todo", false),
-        Todo(UUID.randomUUID().toString(), "Second todo", false),
-        Todo(UUID.randomUUID().toString(), "Third todo", true),
-        Todo(UUID.randomUUID().toString(), "Fourth todo", false),
-        Todo(UUID.randomUUID().toString(), "Fifth todo", true)
+        Todo(0L, "First todo", false),
+        Todo(0L, "Second todo", false),
+        Todo(0L, "Third todo", true),
+        Todo(0L, "Fourth todo", false),
+        Todo(0L, "Fifth todo", true)
       )
     )
   }

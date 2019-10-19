@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 inline fun <reified T : ViewModel> AppCompatActivity.buildViewModel(crossinline viewModelFactory: () -> T): T {
   return ViewModelProviders.of(this, object : ViewModelProvider.NewInstanceFactory() {
