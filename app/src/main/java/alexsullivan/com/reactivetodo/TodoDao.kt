@@ -1,9 +1,7 @@
 package alexsullivan.com.reactivetodo
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
@@ -17,4 +15,7 @@ interface TodoDao {
 
     @Query("SELECT * FROM Todo")
     fun todoObservable(): Flowable<List<Todo>>
+
+    @Delete
+    fun deleteTodo(todo: Todo): Completable
 }
