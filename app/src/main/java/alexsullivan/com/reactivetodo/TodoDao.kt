@@ -1,7 +1,6 @@
 package alexsullivan.com.reactivetodo
 
 import androidx.room.*
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
@@ -17,5 +16,5 @@ interface TodoDao {
     fun todoObservable(): Flowable<List<Todo>>
 
     @Delete
-    fun deleteTodo(todo: Todo): Completable
+    suspend fun deleteTodo(todo: Todo)
 }

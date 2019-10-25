@@ -39,12 +39,8 @@ class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) :
       .addTo(disposables)
   }
 
-  fun todoDeleted(todo: Todo) {
-    db.todoDao()
-      .deleteTodo(todo)
-      .subscribeOn(Schedulers.io())
-      .subscribe()
-      .addTo(disposables)
+  fun todoDeleted(todo: Todo) = viewModelScope.launch {
+    db.todoDao().deleteTodo(todo)
   }
 
   override fun onCleared() {
