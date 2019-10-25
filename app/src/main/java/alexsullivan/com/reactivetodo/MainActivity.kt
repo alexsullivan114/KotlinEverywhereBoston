@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     val viewModel = buildViewModel { TodoViewModel(TodoNetworkServiceImpl(db), db) }
     val adapter = TodoAdapter { viewModel.todoUpdated(it) }
 
+
     val callback = object: ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
       override fun onMove(
         recyclerView: RecyclerView,
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.todoDeleted(item)
       }
     }
+
     ItemTouchHelper(callback).attachToRecyclerView(list)
     list.layoutManager = LinearLayoutManager(this)
     list.adapter = adapter
