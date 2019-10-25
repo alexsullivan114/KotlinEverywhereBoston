@@ -32,11 +32,7 @@ class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) :
   }
 
   fun todoUpdated(todo: Todo) = viewModelScope.launch {
-    db.todoDao()
-      .insertTask(todo)
-      .subscribeOn(Schedulers.io())
-      .subscribe()
-      .addTo(disposables)
+    db.todoDao().insertTask(todo)
   }
 
   fun todoDeleted(todo: Todo) = viewModelScope.launch {
