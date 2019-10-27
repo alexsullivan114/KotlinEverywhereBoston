@@ -2,23 +2,20 @@ package alexsullivan.com.reactivetodo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) : ViewModel() {
-  private val itemsSubject = BehaviorSubject.create<List<Todo>>()
-  val itemsObservable: Observable<List<Todo>> = itemsSubject.hide()
+  private val itemsChannel = ConflatedBroadcastChannel<List<Todo>>()
+  val itemsFlow = itemsChannel.asFlow()
 
   init {
     viewModelScope.launch {
       val networkItems = service.fetchTodos()
       db.todoDao().insertTasks(networkItems)
-      db.todoDao().todoFlow()
-        .collect {
-          itemsSubject.onNext(it)
-        }
+      db.todoDao().todoFlow().collect(itemsChannel::send)
     }
   }
 

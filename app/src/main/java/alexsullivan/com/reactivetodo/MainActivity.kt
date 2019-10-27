@@ -3,16 +3,16 @@ package alexsullivan.com.reactivetodo
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.fab
+import kotlinx.android.synthetic.main.activity_main.list
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-  private val disposables = CompositeDisposable()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     val adapter = TodoAdapter { viewModel.todoUpdated(it) }
 
 
-    val callback = object: ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+    val callback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
       override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
@@ -42,18 +42,13 @@ class MainActivity : AppCompatActivity() {
     list.adapter = adapter
 
 
-    viewModel.itemsObservable
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe { adapter.items = it }
-      .addTo(disposables)
+    lifecycleScope.launch {
+      viewModel.itemsFlow
+        .collect { adapter.items = it }
+    }
 
     fab.setOnClickListener {
       startActivity(Intent(this, TodoActivity::class.java))
     }
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    disposables.clear()
   }
 }
