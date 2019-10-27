@@ -1,7 +1,7 @@
 package alexsullivan.com.reactivetodo
 
 import androidx.room.*
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
@@ -12,7 +12,7 @@ interface TodoDao {
     suspend fun insertTasks(todos: List<Todo>): List<Long>
 
     @Query("SELECT * FROM Todo")
-    fun todoObservable(): Flowable<List<Todo>>
+    fun todoFlow(): Flow<List<Todo>>
 
     @Delete
     suspend fun deleteTodo(todo: Todo)
