@@ -18,9 +18,8 @@ class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) :
 
   init {
     viewModelScope.launch {
-      service
-        .fetchTodos()
-        .flatMap { todos -> db.todoDao().insertTasks(todos) }
+      val networkItems = service.fetchTodos()
+      db.todoDao().insertTasks(networkItems)
         .flatMapObservable { db.todoDao().todoObservable().toObservable() }
         .subscribeOn(Schedulers.io())
         .toFlowable(BackpressureStrategy.BUFFER)
