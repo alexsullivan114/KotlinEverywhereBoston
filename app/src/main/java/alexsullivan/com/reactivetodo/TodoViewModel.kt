@@ -3,14 +3,12 @@ package alexsullivan.com.reactivetodo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) : ViewModel() {
   private val itemsSubject = BehaviorSubject.create<List<Todo>>()
-  private val disposables = CompositeDisposable()
   val itemsObservable: Observable<List<Todo>> = itemsSubject.hide()
 
   init {
@@ -30,10 +28,5 @@ class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) :
 
   fun todoDeleted(todo: Todo) = viewModelScope.launch {
     db.todoDao().deleteTodo(todo)
-  }
-
-  override fun onCleared() {
-    super.onCleared()
-    disposables.clear()
   }
 }
