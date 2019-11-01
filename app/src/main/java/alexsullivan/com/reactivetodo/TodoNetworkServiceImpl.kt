@@ -1,17 +1,21 @@
 package alexsullivan.com.reactivetodo
 
-import io.reactivex.Single
+import kotlinx.coroutines.flow.first
 
 class TodoNetworkServiceImpl(private val db: TodoDatabase) : TodoNetworkService {
-  override fun fetchTodos(): Single<List<Todo>> {
-    return db.todoDao().todoObservable().firstOrError().map {
-      if (it.isNotEmpty()) it else listOf(
+  override suspend fun fetchTodos(): List<Todo> {
+    val todoFlow = db.todoDao().todoFlow()
+    val items = todoFlow.first()
+    return if (items.isEmpty()) {
+      listOf(
         Todo(1L, "First todo", false),
         Todo(2L, "Second todo", false),
         Todo(3L, "Third todo", true),
         Todo(4L, "Fourth todo", false),
         Todo(5L, "Fifth todo", true)
       )
+    } else {
+      items
     }
   }
 }

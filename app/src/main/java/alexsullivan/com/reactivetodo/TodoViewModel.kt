@@ -1,44 +1,29 @@
 package alexsullivan.com.reactivetodo
 
 import androidx.lifecycle.ViewModel
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class TodoViewModel(service: TodoNetworkService, private val db: TodoDatabase) : ViewModel() {
-  private val itemsSubject = BehaviorSubject.create<List<Todo>>()
-  private val disposables = CompositeDisposable()
-  val itemsObservable: Observable<List<Todo>> = itemsSubject.hide()
+  private val itemsChannel = ConflatedBroadcastChannel<List<Todo>>()
+  val itemsFlow = itemsChannel.asFlow()
 
   init {
-    service
-      .fetchTodos()
-      .flatMap { todos -> db.todoDao().insertTasks(todos) }
-      .flatMapObservable { db.todoDao().todoObservable().toObservable() }
-      .subscribeOn(Schedulers.io())
-      .subscribe(itemsSubject::onNext)
-      .addTo(disposables)
+    viewModelScope.launch {
+      val networkItems = service.fetchTodos()
+      db.todoDao().insertTasks(networkItems)
+      db.todoDao().todoFlow().collect(itemsChannel::send)
+    }
   }
 
-  fun todoUpdated(todo: Todo) {
-    db.todoDao()
-      .insertTask(todo)
-      .subscribeOn(Schedulers.io())
-      .subscribe()
-      .addTo(disposables)
+  fun todoUpdated(todo: Todo) = viewModelScope.launch {
+    db.todoDao().insertTask(todo)
   }
 
-  fun todoDeleted(todo: Todo) {
-    db.todoDao()
-      .deleteTodo(todo)
-      .subscribeOn(Schedulers.io())
-      .subscribe()
-      .addTo(disposables)
-  }
-
-  override fun onCleared() {
-    super.onCleared()
-    disposables.clear()
+  fun todoDeleted(todo: Todo) = viewModelScope.launch {
+    db.todoDao().deleteTodo(todo)
   }
 }

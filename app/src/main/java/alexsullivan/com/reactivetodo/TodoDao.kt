@@ -1,21 +1,19 @@
 package alexsullivan.com.reactivetodo
 
 import androidx.room.*
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTask(todo: Todo): Single<Long>
+    suspend fun insertTask(todo: Todo): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertTasks(todos: List<Todo>): Single<List<Long>>
+    suspend fun insertTasks(todos: List<Todo>): List<Long>
 
     @Query("SELECT * FROM Todo")
-    fun todoObservable(): Flowable<List<Todo>>
+    fun todoFlow(): Flow<List<Todo>>
 
     @Delete
-    fun deleteTodo(todo: Todo): Completable
+    suspend fun deleteTodo(todo: Todo)
 }
