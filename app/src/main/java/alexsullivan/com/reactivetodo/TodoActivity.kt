@@ -13,10 +13,6 @@ class TodoActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_todo)
 
-    fetchDatabase(applicationContext).todoDao().todoObservable()
-      .subscribeOn(Schedulers.io())
-      .subscribe { print("Woofers") }
-
     fab.setOnClickListener {
       val todo = Todo(0, todoText.text.toString(), false)
       fetchDatabase(applicationContext).todoDao().insertTask(todo)
